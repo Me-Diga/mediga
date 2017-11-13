@@ -1,0 +1,10 @@
+language: python
+python:
+- 3.6
+- pip install -r requirements.txt
+before_script:
+- python3 manage.py makemigrations
+- python3 manage.py migrate
+- flake8 --exclude='manage.py, mepergunte/settings.py, migrations, templates, */models.py, */tests.py, */admin.py' .
+script:
+- python3 manage.py test
