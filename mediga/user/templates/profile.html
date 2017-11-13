@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+{% block main_content %}
+{% load staticfiles %}
+
+<div class="container">
+  <div class="row">
+    <!-- <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2"> -->
+      <center>
+        <div class="row">
+          <div class="div-avatar-search img-circle">
+            <img class="img-avatar-search" src="/{{ main_profile.avatar.url }}">
+          </div>
+          <h3>{{ main_profile.user.first_name }} {{ main_profile.user.last_name }}</h3>
+          <p>Mensagens: {{ paginator.count }}</p>
+          <button type="button" class="btn btn-success btn-sm">Seguir Usuário</button>
+        </div>
+        <br>
+        <form role="search" method="post" action="/user/{{ main_profile.user.username }}/send_message?page={{ messages.number }}">
+          {% csrf_token %}
+          <div class="row">
+            <div class="form-group">
+              <label for="message">Escreva uma mensagem para {{ main_profile.user.first_name }} {{ main_profile.user.last_name }}! :)</label>
+              <textarea class="form-control" rows="2" id="message" name="message" required></textarea>
+            </div>
+          </div>
+          <div class="row">
+            <span>Opção: </span>
+            {% if request.user.is_authenticated %}
+              <label class="radio-inline">
+                <input type="radio" name="message_style" value="anonymous">anonimamente
+              </label>
+              <a href="" data-toggle="tooltip" title="Quando uma mensagem é enviada anonimamente, nosso sistema não registra nenhum relação entre quem enviou e quem recebeu a mensagem. Caso se sinta mais confortável, há ainda a opção de deslogar antes de mandar uma mensagem anonimamente.">(?)</a>
+              <label class="radio-inline">
+                <input type="radio" name="message_style" value="not_anonymous" checked="checked">como {{ request.user.first_name }} {{ request.user.last_name }}
+              </label>
+            {% else %}
+              <label class="radio-inline">
+                <input type="radio" name="message_style" value="anonymous" checked="checked">anonimamente
+              </label>
+              <a href="" data-toggle="tooltip" title="Quando uma mensagem é enviada anonimamente, nosso sistema não registra nenhum relação entre quem enviou e quem recebeu a mensagem. Caso se sinta mais confortável, há ainda a opção de deslogar antes de mandar uma mensagem anonimamente.">(?)</a>
+            {% endif %}
+          </div>
+          <div class="row">
+            <button type="submit" class="btn btn-primary btn-outline">Enviar mensagem</button>
+          </div>
+        </form
+        <br>
+        <div class="row">
+          <h2><span class="glyphicon glyphicon-envelope"></span> Mensagens</h2>
+          <br>
+
+          <!-- Each message will have it -->
+          {% for message in messages %}
+            <div class="well">
+              <!-- Message -->
+              <div class="row">
+                <div class="col-md-2">
+                  {% if message.author is not None %}
+                    <a href="/user/{{ message.author.user.username }}">
+                      <div class="div-avatar-message">
+                        <img class="img-avatar-message" src="/{{ message.author.avatar.url }}">
+                      </div>
+                    </a>
+                    <h4>{{ message.author.user.first_name }} {{ message.author.user.last_name }}</h4>
+                  {% else %}
+                    <div class="div-avatar-message">
+                      <img class="img-avatar-message" src="{% static 'images/user/anonimo.jpg' %}">
+                    </div>
+                    <h4>Anônimo</h4>
+                  {% endif %}
+                </div>
+                <div class="col-md-10">
+                  <div class="text-justify">{{ message.body }}</div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-2">
+                  {% if message.author is not None %}
+                    <a href="/user/{{ message.author.user.username }}">@{{ message.author.user.username }}</a>
+                  {% endif %}
+                </div>
+                <div class="col-md-4">
+                  <div class="text-left">
+                    <nav>Enviada {{ message.created_at }}</nav>
+                  </div>
+                </div>
+                {% if request.user == message.receiver.user %}
+                  <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary btn-outline btn-block" data-toggle="modal" data-target="#modalMessageResponse{{ message.pk }}"><span class="glyphicon glyphicon-pencil"></span> responder</button>
+                  </div>
+                  <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary btn-outline btn-block" data-toggle="modal" data-target="#modalConfirmDelete{{ message.pk }}"><span class="glyphicon glyphicon-trash"></span> deletar</button>
+                  </div>
+                  <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary btn-outline btn-block"><span class="glyphicon glyphicon-heart"></span> 0 gostaram!</button>
+                  </div>
+                {% elif request.user == message.author.user %}
+                  <div class="col-md-offset-2 col-md-2">
+                    <button type="submit" class="btn btn-primary btn-outline btn-block" data-toggle="modal" data-target="#modalMessageResponse{{ message.pk }}"><span class="glyphicon glyphicon-pencil"></span> responder</button>
+                  </div>
+                  <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary btn-outline btn-block"><span class="glyphicon glyphicon-heart"></span> 0 gostaram!</button>
+                  </div>
+                {% elif request.user.is_authenticated %}
+                  <div class="col-md-offset-4 col-md-2">
+                    <button type="submit" class="btn btn-primary btn-outline btn-block"><span class="glyphicon glyphicon-heart"></span> 0 gostaram!</button>
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- Response -->
+              {% for response in message.received_responses.all %}
+                <hr>
+                <div class="row">
+                  <div class="col-md-offset-1 col-md-2">
+                    <a href="/user/{{ response.author.user.username }}">
+                      <div class="div-avatar-message">
+                        <img class="img-avatar-message" src="/{{ response.author.avatar.url }}">
+                      </div>
+                    </a>
+                    <h4>{{ response.author.user.first_name }} {{ response.author.user.last_name }}</h4>
+                  </div>
+                  <div class="col-md-9">
+                    <div class="text-justify">{{ response.body }}</div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-offset-1 col-md-2">
+                    <a href="/user/{{ response.author.user.username }}">@{{ response.author.user.username }}</a>
+                  </div>
+                  <div class="col-md-5">
+                    <div class="text-left">
+                      <nav>{{ response.created_at }}</nav>
+                    </div>
+                  </div>
+                  {% if request.user == response.message.receiver.user %}
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary btn-outline btn-block" data-toggle="modal" data-target="#modalConfirmDeleteResponse{{ response.pk }}"><span class="glyphicon glyphicon-trash"></span> deletar</button>
+                    </div>
+                    <div class="col-md-2">
+                      <button type="submit" class="btn btn-primary btn-outline  btn-block"><span class="glyphicon glyphicon-heart"></span> 0 gostaram!</button>
+                    </div>
+                  {% elif request.user.is_authenticated %}
+                    <div class="col-md-offset-2 col-md-2">
+                      <button type="submit" class="btn btn-primary btn-outline  btn-block"><span class="glyphicon glyphicon-heart"></span> 0 gostaram!</button>
+                    </div>
+                  {% endif %}
+                </div>
+
+                <!-- Modal -->
+                <div id="modalConfirmDeleteResponse{{ response.pk }}" class="modal fade" role="dialog">
+                  <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Confirmar exclusão</h4>
+                      </div>
+                      <div class="modal-body">
+                        {% if response.author.user is None %}
+                          <p>Tem certeza que deseja excluir a resposta de Anônimo?</p>
+                        {% else %}
+                          <p>Tem certeza que deseja excluir a resposta de {{ response.author.user.first_name }} {{ response.author.user.last_name }}?</p>
+                        {% endif %}
+                      </div>
+                      <div class="modal-footer">
+                        <form method="post" action="/user/{{ main_profile.user.username }}/delete_response/{{ response.pk }}?page={{ messages.number }}">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-default">Confirmar</button>
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        </form>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+              {% endfor %}
+            </div>
+
+            <!-- Modal -->
+            <div id="modalConfirmDelete{{ message.pk }}" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Confirmar exclusão</h4>
+                  </div>
+                  <div class="modal-body">
+                    {% if message.author.user is None %}
+                      <p>Tem certeza que deseja excluir a mensagem de Anônimo?</p>
+                    {% else %}
+                      <p>Tem certeza que deseja excluir a mensagem de {{ message.author.user.first_name }} {{ message.author.user.last_name }}?</p>
+                    {% endif %}
+                  </div>
+                  <div class="modal-footer">
+                    <form method="post" action="/user/{{ main_profile.user.username }}/delete_message/{{ message.pk }}?page={{ messages.number }}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-default">Confirmar</button>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    </form>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Modal -->
+            <div id="modalMessageResponse{{ message.pk }}" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Escrever resposta</h4>
+                  </div>
+                  <form method="post" action="/user/{{ main_profile.user.username }}/new_response/{{ message.pk }}?page={{ messages.number }}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                      {% if message.author.user is None %}
+                        <p>Deixe uma resposta para a mensagem de Anônimo!</p>
+                      {% else %}
+                        <p>Deixe uma resposta para a mensagem de {{ message.author.user.first_name }} {{ message.author.user.last_name }}!</p>
+                      {% endif %}
+                      <textarea class="form-control" rows="2" id="response" name="response" required></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-default">Confirmar</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    </div>
+                  </form>
+                </div>
+
+              </div>
+            </div>
+
+          {% endfor %}
+        </div>
+
+        <div class="row">
+            <nav aria-label="Page navigation">
+              <ul class="pagination pagination-lg">
+                {% if messages.has_previous %}
+                  <li>
+                    <a href="?page={{ messages.previous_page_number }}" aria-label="Previous">
+                      <span aria-hidden="true">&laquo;</span>
+                    </a>
+                  </li>
+                {% endif %}
+                {% for page in paginator.page_range %}
+                  {% if page == messages.number %}
+                    <li class="active"><a href="?page={{ page }}">{{ page }}</a></li>
+                  {% else %}
+                    <li><a href="?page={{ page }}">{{ page }}</a></li>
+                  {% endif %}
+                {% endfor %}
+                {% if messages.has_next %}
+                  <li>
+                    <a href="?page={{ messages.next_page_number }}" aria-label="Next">
+                      <span aria-hidden="true">&raquo;</span>
+                    </a>
+                  </li>
+                {% endif %}
+              </ul>
+            </nav>
+        </div>
+
+      </center>
+    <!-- </div> -->
+  </div>
+</div>
+
+<script src="{% static 'js/profile.js' %}"></script>
+
+{% endblock main_content %}

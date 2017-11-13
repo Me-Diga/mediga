@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block main_content %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2">
+      <div class="text-center">
+        <h3>Efetuar Login</h3>
+      </div>
+      <form method="post">
+        {% csrf_token %}
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        <!-- {% if form.username.errors %}
+          {{ form.username.errors }}
+        {% endif %} -->
+        <div class="input-group">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+            <input class="form-control input-lg" type="input" name="{{ form.username.html_name }}" id="{{ form.username.id_for_label }}" placeholder="{{ form.username.label }}" {% if form.username.value %} value="{{ form.username.value }}" {% endif %} required />
+            {% if form.username.help_text %}
+            <p class="help">{{ form.username.help_text|safe }}</p>
+            {% endif %}
+        </div>
+        <br>
+        {% if form.password.errors %}
+          {{ form.password.errors }}
+        {% endif %}
+        <div class="input-group">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+            <input class="form-control input-lg" type="password" name="{{ form.password.html_name }}" id="{{ form.password.id_for_label }}" placeholder="{{ form.password.label }}" required />
+            {% if form.password.help_text %}
+            <p class="help">{{ form.password.help_text|safe }}</p>
+            {% endif %}
+        </div>
+        <br>
+        <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2">
+          <button type="submit" class="btn btn-primary btn-outline btn-block"><h4>Logar</h4></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock main_content %}

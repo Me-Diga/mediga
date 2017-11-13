@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block main_content %}
+{% load staticfiles %}
+
+<div class="container">
+  <div class="row">
+    <!-- <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2"> -->
+      <center>
+        <div class="row">
+          <div class="div-avatar-search img-circle">
+            <img class="img-avatar-search" src="/{{ current_profile.avatar.url }}">
+          </div>
+          <h3>{{ current_profile.user.first_name }} {{ current_profile.user.last_name }}</h3>
+          <p>Mensagens não publicadas: {{ paginator.count }}</p>
+        </div>
+        <br>
+        <div class="row">
+          <h2><span class="glyphicon glyphicon-envelope"></span> Caixa de Entrada</h2>
+          <br>
+          <!-- Each message will have it -->
+          {% for message in messages %}
+            <div class="well">
+              <!-- Message -->
+              <div class="row">
+                <div class="col-md-2">
+                  {% if message.author is not None %}
+                    <a href="/user/{{ message.author.user.username }}">
+                      <div class="div-avatar-message">
+                        <img class="img-avatar-message" src="/{{ message.author.avatar.url }}">
+                      </div>
+                    </a>
+                    <h4>{{ message.author.user.first_name }} {{ message.author.user.last_name }}</h4>
+                  {% else %}
+                    <div class="div-avatar-message">
+                      <img class="img-avatar-message" src="{% static 'images/user/anonimo.jpg' %}">
+                    </div>
+                    <h4>Anôninmo</h4>
+                  {% endif %}
+                </div>
+                <div class="col-md-10">
+                  <div class="text-justify">{{ message.body }}</div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-2">
+                  {% if message.author is not None %}
+                    <a href="/user/{{ message.author.user.username }}">@{{ message.author.user.username }}</a>
+                  {% endif %}
+                </div>
+                <div class="col-md-4">
+                  <div class="text-left">
+                    <nav>Enviada {{ message.created_at }}</nav>
+                  </div>
+                </div>
+                <div class="col-md-offset-2 col-md-2">
+                  <button type="submit" class="btn btn-primary btn-outline btn-block" data-toggle="modal" data-target="#modalConfirmDelete{{ message.pk }}"><span class="glyphicon glyphicon-trash"></span> deletar</button>
+                </div>
+                <div class="col-md-2">
+                  <button type="submit" class="btn btn-primary btn-outline btn-block" data-toggle="modal" data-target="#modalConfirmPublish{{ message.pk }}"><span class="glyphicon glyphicon-ok"></span> publicar!</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal -->
+            <div id="modalConfirmDelete{{ message.pk }}" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Confirmar exclusão</h4>
+                  </div>
+                  <div class="modal-body">
+                    {% if message.author.user is None %}
+                      <p>Tem certeza que deseja excluir a mensagem de Anônimo?</p>
+                    {% else %}
+                      <p>Tem certeza que deseja excluir a mensagem de {{ message.author.user.first_name }} {{ message.author.user.last_name }}?</p>
+                    {% endif %}
+                  </div>
+                  <div class="modal-footer">
+                    <form method="post" action="/user/{{ current_profile.user.username }}/box/delete_message/{{ message.pk }}?page={{ messages.number }}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-default">Confirmar</button>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    </form>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Modal -->
+            <div id="modalConfirmPublish{{ message.pk }}" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Confirmar publicação</h4>
+                  </div>
+                  <div class="modal-body">
+                    {% if message.author.user is None %}
+                      <p>Tem certeza que deseja publicar a mensagem de Anônimo?</p>
+                    {% else %}
+                      <p>Tem certeza que deseja publicar a mensagem de {{ message.author.user.first_name }} {{ message.author.user.last_name }}?</p>
+                    {% endif %}
+                  </div>
+                  <div class="modal-footer">
+                    <form method="post" action="/user/{{ current_profile.user.username }}/box/publish_message/{{ message.pk }}?page={{ messages.number }}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-default">Confirmar</button>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    </form>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          {% endfor %}
+        </div>
+
+        <div class="row">
+            <nav aria-label="Page navigation">
+              <ul class="pagination pagination-lg">
+                {% if messages.has_previous %}
+                  <li>
+                    <a href="?page={{ messages.previous_page_number }}" aria-label="Previous">
+                      <span aria-hidden="true">&laquo;</span>
+                    </a>
+                  </li>
+                {% endif %}
+                {% for page in paginator.page_range %}
+                  {% if page == messages.number %}
+                    <li class="active"><a href="?page={{ page }}">{{ page }}</a></li>
+                  {% else %}
+                    <li><a href="?page={{ page }}">{{ page }}</a></li>
+                  {% endif %}
+                {% endfor %}
+                {% if messages.has_next %}
+                  <li>
+                    <a href="?page={{ messages.next_page_number }}" aria-label="Next">
+                      <span aria-hidden="true">&raquo;</span>
+                    </a>
+                  </li>
+                {% endif %}
+              </ul>
+            </nav>
+        </div>
+
+      </center>
+    <!-- </div> -->
+  </div>
+</div>
+
+<script src="{% static 'js/profile.js' %}"></script>
+
+{% endblock main_content %}
