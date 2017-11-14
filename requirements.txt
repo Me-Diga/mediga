@@ -3,3 +3,5 @@ virtualenv==15.1.0
 flake8==3.4.1
 ipython==6.2.1
 Pillow==4.3.0
+gunicorn
+psycopg2
