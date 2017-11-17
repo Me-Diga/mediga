@@ -1,5 +1,5 @@
 ---
-- hosts: servers
+- hosts: mediga_prod
   vars_files:
     - vars.yml
   gather_facts: false

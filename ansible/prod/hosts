@@ -1,0 +1,2 @@
+[mediga_prod]
+35.185.24.100 ansible_user=medigabot ansible_ssh_private_key_file=/home/travis/build/Me-Diga/mediga/ansible/prod/.ssh/medigakey

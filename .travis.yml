@@ -5,6 +5,11 @@ python:
 before_script:
 - python3 manage.py makemigrations
 - python3 manage.py migrate
-- flake8 --exclude='manage.py, mepergunte/settings.py, migrations, templates, */models.py, */tests.py, */admin.py' .
+- flake8 --exclude='manage.py, mediga/settings.py, migrations, templates, */models.py, */tests.py, */admin.py, ansible' .
+- chmod -R 400 /home/travis/build/Me-Diga/mediga/ansible/prod/.ssh/*
 script:
 - python3 manage.py test
+- ansible-playbook -i ansible/prod/hosts ansible/prod/provision.yml
+addons:
+  ssh_known_hosts:
+  - 35.185.24.100

@@ -129,7 +129,7 @@ class UserProfileView(View):
         message = Message.objects.get(pk=message_pk)
 
         if current_user.username == username or\
-            current_user.username == message.author.user.username:
+                current_user.username == message.author.user.username:
 
             response = Response.objects.create(
                 body=body,
