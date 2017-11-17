@@ -1,0 +1,28 @@
+---
+project_name: mediga
+project_user: medigabot
+project_env: mdenv
+wsgi_module: hello.wsgi
+
+install_root: /home/medigabot
+pythonpath: "{{ install_root }}/{{ project_name }}/{{ project_env }}/bin/python3"
+static_root: "{{ install_root }}/{{ project_name }}/static"
+
+project_repo: https://github.com/Me-Diga/mediga.git
+ssh_private_key: ~/.ssh/id_rsa
+
+server_name: 35.185.24.100
+
+db_name: medigadb
+db_user: medigadbuser
+db_password: HAWCqLGtG2Zy
+
+system_packages:
+  - git
+  - python3-pip
+  - python3-dev
+  - libpq-dev
+  - postgresql
+  - postgresql-contrib
+  - nginx
+  - python-psycopg2

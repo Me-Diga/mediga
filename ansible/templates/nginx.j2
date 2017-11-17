@@ -1,0 +1,14 @@
+server {
+    listen 80;
+    server_name {{ server_name }};
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static/ {
+        root {{ install_root }}/{{ project_name }};
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:{{ install_root }}/{{ project_name }}/{{ project_name }}.sock;
+    }
+}
