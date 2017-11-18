@@ -1,18 +1,19 @@
 ---
 project_name: mediga
-project_user: medigabot
+project_user: ubuntu
 project_env: mdenv
 wsgi_module: hello.wsgi
 
-install_root: /home/medigabot
+install_root: /home/ubuntu
 pythonpath: "{{ install_root }}/{{ project_name }}/{{ project_env }}/bin/python3"
 static_root: "{{ install_root }}/{{ project_name }}/static"
 
 project_repo: https://github.com/Me-Diga/mediga.git
 ssh_private_key: ~/.ssh/id_rsa
 
-server_name: 35.185.24.100
-server_port: 80
+server_name: 127.0.0.1
+server_name_alternative: localhost
+server_port: 8000
 
 db_name: medigadb
 db_user: medigadbuser
