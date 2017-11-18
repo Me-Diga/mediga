@@ -28,3 +28,5 @@ system_packages:
   - postgresql-contrib
   - nginx
   - python-psycopg2
+  - npm
+  - nodejs-legacy

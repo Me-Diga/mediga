@@ -23,6 +23,15 @@
         requirements: "{{ install_root }}/{{ project_name }}/requirements.txt"
         virtualenv: "{{ install_root }}/{{ project_name }}/mdenv"
 
+    - name: Install gulp script dependencies
+      npm:
+        path: "{{ install_root }}/{{ project_name }}"
+
+    - name: Minify css and js
+      command: npm run gulp
+      args:
+        chdir: "{{ install_root }}/{{ project_name }}"
+
     - name: Apply gunicorn configuration
       template:
         src: gunicorn.j2

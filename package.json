@@ -1,0 +1,18 @@
+{
+  "name": "mediga",
+  "version": "1.0.0",
+  "description": "mediga project",
+  "main": "index.js",
+  "scripts": {
+    "gulp": "gulp"
+  },
+  "author": "Mateus de Morais / Breno Mariz",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-cssnano": "^2.1.2",
+    "gulp-uglify": "^3.0.0",
+    "gulp-concat": "^2.6.1",
+    "run-sequence": "^2.2.0"
+  }
+}
