@@ -2,6 +2,8 @@
 db.sqlite3
 static/images/user/
 migrations/
+.vagrant/
+provision.retry
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

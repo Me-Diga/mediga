@@ -13,3 +13,6 @@ script:
 addons:
   ssh_known_hosts:
   - 35.185.24.100
+branches:
+  only:
+  - master
